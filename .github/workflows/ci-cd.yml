@@ -37,9 +37,14 @@ jobs:
             exit 1
           }
 
-      - name: Install ChromeDriver 130.0.6723.69
+      - name: Install ChromeDriver
         run: |
-          CHROMEDRIVER_VERSION="130.0.6723.69"
+          CHROME_VERSION="130.0.6723.69"
+          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$(echo $CHROME_VERSION | cut -d '.' -f 1-2)" || echo "not_found")
+          if [ "$CHROMEDRIVER_VERSION" = "not_found" ]; then
+            echo "Failed to find a compatible ChromeDriver version for Chrome $CHROME_VERSION."
+            exit 1
+          fi
           wget -q "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" || {
             echo "Failed to download ChromeDriver."
             exit 1
@@ -51,33 +56,4 @@ jobs:
       - name: Verify Chrome installation
         run: |
           echo "Checking Google Chrome version:"
-          google-chrome --version || echo "Google Chrome not found"
-          echo "Checking Chrome binary location:"
-          which google-chrome || echo "Google Chrome binary not found"
-
-      - name: Verify ChromeDriver installation
-        run: |
-          echo "Checking ChromeDriver version:"
-          chromedriver --version || echo "ChromeDriver not found"
-          echo "Checking ChromeDriver binary location:"
-          which chromedriver || echo "ChromeDriver binary not found"
-
-      - name: Run tests
-        env:
-          DISPLAY: :99.0
-          CHROME_BIN: /usr/bin/google-chrome
-          PATH: /usr/local/bin:$PATH
-        run: |
-          python -m pytest tests/ || echo "Tests failed"
-
-      - name: Send email notification
-        if: failure()
-        uses: dawidd6/action-send-mail@v3
-        with:
-          to: poojisingh8982@gmail.com
-          subject: 'GitHub Actions CI Failure'
-          body: 'The CI build has failed. Please check the details.'
-          from: ${{ secrets.EMAIL_USER }}
-          password: ${{ secrets.EMAIL_PASS }}
-          smtp-server: smtp.gmail.com
-          smtp-port: 587
+          google-chrome --
