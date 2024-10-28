@@ -19,13 +19,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Google Chrome
+      - name: Install specific version of Google Chrome
         run: |
           sudo apt-get update
           sudo apt-get install -y wget
-          # Install a stable version of Chrome (e.g., 118.0.5993.90)
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get install -y -f
+          # Download specific stable version of Chrome (e.g., 118.0.5993.90)
+          wget https://dl.google.com/linux/deb/pool/main/g/google-chrome-stable/google-chrome-stable_118.0.5993.90-1_amd64.deb
+          sudo dpkg -i google-chrome-stable_118.0.5993.90-1_amd64.deb || sudo apt-get install -y -f
 
       - name: Install ChromeDriver
         run: |
