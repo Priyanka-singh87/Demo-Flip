@@ -21,33 +21,46 @@ jobs:
 
       - name: Install Google Chrome (specific version)
         run: |
+          set -e  # Exit immediately if a command exits with a non-zero status
           sudo apt-get update
           sudo apt-get install -y wget
           # Download a specific version of Google Chrome (118)
-          wget -q https://dl.google.com/linux/deb/pool/main/g/google-chrome-stable/google-chrome-stable_118.0.5993.90-1_amd64.deb
-          sudo dpkg -i google-chrome-stable_118.0.5993.90-1_amd64.deb || sudo apt-get install -y -f
+          if ! wget -q https://dl.google.com/linux/deb/pool/main/g/google-chrome-stable/google-chrome-stable_118.0.5993.90-1_amd64.deb; then
+            echo "Failed to download Google Chrome."
+            exit 1
+          fi
+          if ! sudo dpkg -i google-chrome-stable_118.0.5993.90-1_amd64.deb; then
+            echo "Failed to install Google Chrome. Attempting to fix broken dependencies."
+            sudo apt-get install -y -f
+          fi
 
       - name: Install ChromeDriver (specific version)
         run: |
-          # Download the compatible ChromeDriver version (118)
-          wget -q https://chromedriver.storage.googleapis.com/118.0.5993.90/chromedriver_linux64.zip
-          unzip chromedriver_linux64.zip
+          if ! wget -q https://chromedriver.storage.googleapis.com/118.0.5993.90/chromedriver_linux64.zip; then
+            echo "Failed to download ChromeDriver."
+            exit 1
+          fi
+          unzip -o chromedriver_linux64.zip
           sudo mv chromedriver /usr/local/bin/
           sudo chmod +x /usr/local/bin/chromedriver
 
       - name: Verify Chrome installation
         run: |
           echo "Checking Google Chrome version:"
-          google-chrome --version || echo "Google Chrome not found"
+          if ! google-chrome --version; then
+            echo "Google Chrome not found"
+          fi
           echo "Checking Chrome binary location:"
-          which google-chrome
+          which google-chrome || echo "Google Chrome binary not found"
 
       - name: Verify ChromeDriver installation
         run: |
           echo "Checking ChromeDriver version:"
-          chromedriver --version || echo "ChromeDriver not found"
+          if ! chromedriver --version; then
+            echo "ChromeDriver not found"
+          fi
           echo "Checking ChromeDriver binary location:"
-          which chromedriver
+          which chromedriver || echo "ChromeDriver binary not found"
 
       - name: Run tests
         env:
