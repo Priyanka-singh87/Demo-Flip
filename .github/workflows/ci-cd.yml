@@ -23,6 +23,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget
+          # Install a stable version of Chrome (e.g., 118.0.5993.90)
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get install -y -f
 
@@ -72,4 +73,7 @@ jobs:
           to: poojisingh8982@gmail.com
           subject: 'GitHub Actions CI Failure'
           body: 'The CI build has failed. Please check the details.'
-
+          from: ${{ secrets.EMAIL_USER }}
+          password: ${{ secrets.EMAIL_PASS }}
+          smtp-server: smtp.gmail.com
+          smtp-port: 587
