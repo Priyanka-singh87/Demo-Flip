@@ -19,29 +19,32 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Chrome and ChromeDriver
+      - name: Install Google Chrome
         run: |
           sudo apt-get update
           sudo apt-get install -y wget
-          # Install Chrome
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo apt install -y ./google-chrome-stable_current_amd64.deb
-          # Install ChromeDriver
+
+      - name: Install ChromeDriver
+        run: |
           sudo apt-get install -y chromium-chromedriver
 
-      - name: Set Chrome Environment Variables
+      - name: Check Chrome and ChromeDriver
         run: |
-          echo "CHROME_BIN=/usr/bin/google-chrome" >> $GITHUB_ENV
-          echo "CHROME_PATH=/usr/bin/chromedriver" >> $GITHUB_ENV
-
-      - name: Verify Chrome installation
-        run: |
+          echo "Chrome version:"
           google-chrome --version
+          echo "ChromeDriver version:"
           chromedriver --version
+          echo "Checking Chrome binary location:"
+          ls -l /usr/bin/google-chrome
+          ls -l /usr/bin/chromedriver
 
       - name: Run tests
         env:
           DISPLAY: :99.0
+          CHROME_BIN: /usr/bin/google-chrome
+          CHROME_PATH: /usr/bin/chromedriver
         run: |
           python -m pytest tests/ || echo "Tests failed"
 
