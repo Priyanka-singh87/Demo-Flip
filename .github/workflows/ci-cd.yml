@@ -23,20 +23,25 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget
+          # Install Chrome
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo apt install -y ./google-chrome-stable_current_amd64.deb
+          # Install ChromeDriver
           sudo apt-get install -y chromium-chromedriver
+
+      - name: Set Chrome Environment Variables
+        run: |
+          echo "CHROME_BIN=/usr/bin/google-chrome" >> $GITHUB_ENV
+          echo "CHROME_PATH=/usr/bin/chromedriver" >> $GITHUB_ENV
 
       - name: Verify Chrome installation
         run: |
           google-chrome --version
+          chromedriver --version
 
       - name: Run tests
         env:
           DISPLAY: :99.0
-          CHROME_BIN: /usr/bin/google-chrome
-          CHROME_PATH: /usr/bin/chromedriver
-
         run: |
           python -m pytest tests/ || echo "Tests failed"
 
