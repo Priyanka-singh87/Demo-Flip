@@ -19,12 +19,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Install dependencies for Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg2
+
+      - name: Add Google Chrome repository
+        run: |
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+
       - name: Install Google Chrome
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get install -y -f
+          sudo apt-get install -y google-chrome-stable
 
       - name: Install ChromeDriver
         run: |
