@@ -24,22 +24,26 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y wget unzip
 
-      - name: Install Google Chrome 129
+      - name: Install Google Chrome
         run: |
-          CHROME_DEB="google-chrome-stable_129.0.0.0-1_amd64.deb"
-          wget -q -O $CHROME_DEB "https://dl.google.com/linux/deb/pool/main/g/google-chrome-stable/$CHROME_DEB" || {
+          # Attempt to install a stable version of Chrome
+          wget -q -O google-chrome-stable_current_amd64.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb" || {
             echo "Failed to download Google Chrome."
             exit 1
           }
-          sudo dpkg -i $CHROME_DEB || {
+          sudo dpkg -i google-chrome-stable_current_amd64.deb || {
             echo "Failed to install Google Chrome."
             sudo apt-get install -y -f
             exit 1
           }
 
-      - name: Install ChromeDriver for Chrome 129
+      - name: Install ChromeDriver
         run: |
-          wget -q https://chromedriver.storage.googleapis.com/129.0.0.0/chromedriver_linux64.zip || {
+          # Get the version of Google Chrome installed
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+') 
+          echo "Detected Chrome version: $CHROME_VERSION"
+          # Download the matching ChromeDriver version
+          wget -q "https://chromedriver.storage.googleapis.com/$CHROME_VERSION/chromedriver_linux64.zip" || {
             echo "Failed to download ChromeDriver."
             exit 1
           }
