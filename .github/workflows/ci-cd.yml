@@ -43,6 +43,6 @@ jobs:
 
           with smtplib.SMTP('smtp.gmail.com', 587) as server:
               server.starttls()
-              server.login('poojisingh8982@gmail.com', 'your-email-password')  
+              server.login('poojisingh8982@gmail.com', 'Pooja@1394')  
               server.send_message(msg)
           "
