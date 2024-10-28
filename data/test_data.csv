@@ -1,0 +1,6 @@
+test_case_id,test_type,search_term,expected_result
+1,search,electronics,true
+2,search,laptops,true
+3,search,mobiles,true
+4,search,camera,true
+5,search,headphones,true
