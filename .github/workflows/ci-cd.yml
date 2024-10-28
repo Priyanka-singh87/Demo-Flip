@@ -19,19 +19,41 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Chrome and ChromeDriver
+      - name: Install Google Chrome (specific version)
         run: |
           sudo apt-get update
           sudo apt-get install -y wget
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo apt install -y ./google-chrome-stable_current_amd64.deb
-          sudo apt-get install -y chromium-chromedriver
+          # Download a specific version of Google Chrome (118)
+          wget -q https://dl.google.com/linux/deb/pool/main/g/google-chrome-stable/google-chrome-stable_118.0.5993.90-1_amd64.deb
+          sudo dpkg -i google-chrome-stable_118.0.5993.90-1_amd64.deb || sudo apt-get install -y -f
+
+      - name: Install ChromeDriver (specific version)
+        run: |
+          # Download the compatible ChromeDriver version (118)
+          wget -q https://chromedriver.storage.googleapis.com/118.0.5993.90/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
+
+      - name: Verify Chrome installation
+        run: |
+          echo "Checking Google Chrome version:"
+          google-chrome --version || echo "Google Chrome not found"
+          echo "Checking Chrome binary location:"
+          which google-chrome
+
+      - name: Verify ChromeDriver installation
+        run: |
+          echo "Checking ChromeDriver version:"
+          chromedriver --version || echo "ChromeDriver not found"
+          echo "Checking ChromeDriver binary location:"
+          which chromedriver
 
       - name: Run tests
         env:
           DISPLAY: :99.0
           CHROME_BIN: /usr/bin/google-chrome
-          CHROME_PATH: /usr/bin/chromedriver
+          PATH: /usr/local/bin:$PATH
         run: |
           python -m pytest tests/ || echo "Tests failed"
 
