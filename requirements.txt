@@ -1,3 +1,5 @@
 #Note:The email and password is saved in github repo
 selenium
 pytest
+chrome
+webdrivermanager
