@@ -1,6 +1,7 @@
 import pytest
 from selenium import webdriver
-
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 from Utilities.scrrenshots import capture_screenshot
 
 @pytest.fixture(scope='session')
@@ -10,6 +11,16 @@ def driver():
     driver.implicitly_wait(10)    # Implicit wait
     yield driver
     driver.quit()
+
+
+def setup_driver():
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Run in headless mode
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    return driver
 
 
 @pytest.hookimpl(tryfirst=True)

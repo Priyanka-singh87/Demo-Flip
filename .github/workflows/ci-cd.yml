@@ -13,7 +13,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.8'  # Change to your desired Python version
+        python-version: '3.10'  # Change to your desired Python version
 
     - name: Install Google Chrome
       run: |
@@ -25,7 +25,7 @@ jobs:
     - name: Install ChromeDriver
       run: |
         # Set a specific ChromeDriver version that matches the installed Chrome version
-        CHROMEDRIVER_VERSION="130.0.6723.24"  # Adjust this to the latest stable version available
+        CHROMEDRIVER_VERSION="130.0.6723.70"  # Adjust this to the latest stable version available
         wget "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/
