@@ -1,5 +1,5 @@
 #Note:The email and password is saved in github repo
-selenium
-pytest
-chrome
-webdrivermanager
+selenium>=4.0.0
+pytest>=6.0.0
+pytest-html>=3.1.1
+webdriver-manager>=3.5.0
