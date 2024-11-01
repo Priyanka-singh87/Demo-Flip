@@ -3,43 +3,38 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'  # or your preferred version
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'  # Change to your desired Python version
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      - name: Install Chrome and ChromeDriver
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo apt install -y ./google-chrome-stable_current_amd64.deb
-          sudo apt-get install -y chromium-chromedriver
-      - name: Run tests
-        env:
-          DISPLAY: :99.0
-          CHROME_BIN: /usr/bin/google-chrome
-          CHROME_PATH: /usr/bin/chromedriver
-        run: |
-          python -m pytest tests/ || echo "Tests failed"
-      - name: Send email notification
-        if: failure()
-        uses: dawidd6/action-send-mail@v3
-        with:
-          to: poojisingh8982@gmail.com
-          subject: 'GitHub Actions CI Failure'
-          body: 'The CI build has failed. Please check the details.'
-          from: ${{ secrets.EMAIL_USER }}
-          password: ${{ secrets.EMAIL_PASS }}
-          smtp-server: smtp.gmail.com
-          smtp-port: 587
+    - name: Install Google Chrome
+      run: |
+        wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+        echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable
+
+    - name: Install ChromeDriver
+      run: |
+        CHROME_VERSION=$(google-chrome --version | grep -oP '[\d.]+')
+        CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
+        wget https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
+        unzip chromedriver_linux64.zip
+        sudo mv chromedriver /usr/local/bin/
+        sudo chmod +x /usr/local/bin/chromedriver
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt  # Adjust path if necessary
+
+    - name: Run tests
+      run: |
+        pytest --html=report.html --self-contained-html
